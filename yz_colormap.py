@@ -1,6 +1,46 @@
 from __future__ import print_function
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+
+def discrete_map(cmap, cmin, cmax, cnum):
+    '''
+    Self defined discrete map. 
+    
+    An example shown below:
+    ========================
+    fig = plt.figure(figsize=(5, 4))
+    ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+    ax.set_axis_bgcolor('black')
+
+    cmap, val2color, norm, bounds = discrete_map(plt.cm.bwr, 0.15, 0.4, 20)
+    im = ax.imshow(m0, origin='lower', interpolation='nearest', 
+                   cmap=cmap, norm=norm)
+    # val2color is used for scattered plot. 
+    
+    cax = fig.add_axes([0.83, 0.1, 0.03, 0.8])
+    fig.colorbar(im, cax=cax, spacing='proportional', format='%.2f', 
+                 ticks=bounds[::2], boundaries=bounds)
+    fig.savefig('new.pdf')
+    ========================
+    Original code source: http://stackoverflow.com/questions/14777066/matplotlib-discrete-colorbar
+    '''
+
+    # cmap can be the name, or the actual map, e.g., plt.cm.bwr
+    if type(cmap) == str: cmap = plt.get_cmap(cmap)
+
+    # extract all colors from the map
+    cmaplist = [cmap(i) for i in range(cmap.N)]
+
+    # create the new map
+    new_cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
+
+    # define the bins and normalize
+    bounds = np.linspace(cmin, cmax, cnum)
+    norm = mpl.colors.BoundaryNorm(bounds, new_cmap.N)
+    val2color = mpl.pyplot.cm.ScalarMappable(norm=norm, cmap=new_cmap)
+
+    return new_cmap, val2color, norm, bounds
 
 # customize the matplotlib colormap 
 def yz_colors():
