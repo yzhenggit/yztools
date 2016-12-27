@@ -21,7 +21,7 @@ def vhelio2vlsr_Westmeier(vel_init, obj_ra, obj_dec, reverse=False):
     else: 
 	delv = +9*np.cos(l)*np.cos(b)+12*np.sin(l)*np.cos(b)+7*np.sin(b)
 
-    print 'Velocity correction at this (RA, DEC) is (km/s): ', delv
+    # print 'Velocity correction at this (RA, DEC) is (km/s): ', delv
     return vel_init+delv
 
 ##########################
