@@ -1,5 +1,7 @@
+from __future__ import print_function
+
 ##############
-def vhelio2vlsr_Westmeier(vel_init, obj_ra, obj_dec, reverse=False):
+def vhelio2vlsr_Westmeier(vel_init, ral, decb, reverse=False, doradec=True):
     '''
     - from http://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php
     - obj_ra:  should be in degree
@@ -11,15 +13,19 @@ def vhelio2vlsr_Westmeier(vel_init, obj_ra, obj_dec, reverse=False):
     '''
     from astropy.coordinates import SkyCoord
     import numpy as np
-
-    c = SkyCoord(obj_ra, obj_dec, unit='deg')
-    l = c.galactic.l.value/180.*np.pi
-    b = c.galactic.b.value/180.*np.pi
+    
+    if doradec==True:
+        c = SkyCoord(ral, decb, unit='deg')
+        l = c.galactic.l.value/180.*np.pi
+        b = c.galactic.b.value/180.*np.pi
+    else:
+        l = ral/180.*np.pi
+        b = decb/180.*np.pi
     # vlsr 00> vhelio
     if reverse:
-	delv = -(9*np.cos(l)*np.cos(b)+12*np.sin(l)*np.cos(b)+7*np.sin(b))
+        delv = -(9*np.cos(l)*np.cos(b)+12*np.sin(l)*np.cos(b)+7*np.sin(b))
     else: 
-	delv = +9*np.cos(l)*np.cos(b)+12*np.sin(l)*np.cos(b)+7*np.sin(b)
+        delv = +9*np.cos(l)*np.cos(b)+12*np.sin(l)*np.cos(b)+7*np.sin(b)
 
     # print 'Velocity correction at this (RA, DEC) is (km/s): ', delv
     return vel_init+delv
@@ -65,7 +71,7 @@ def vhelio2vlsr_Rosolowsky(vel_init, obj_ra, obj_dec,
         solarmotion_vmag = 16.55
 
     else:
-        print 'Assign either LSRK or LSRD to be True'
+        print('Assign either LSRK or LSRD to be True')
         sys.exit(1)
 
 
@@ -82,6 +88,6 @@ def vhelio2vlsr_Rosolowsky(vel_init, obj_ra, obj_dec,
     # vhelio --> vlsr, by default
     else:
         delv = solarmotion_vmag*np.cos(gc_dist)
-    print 'Velocity correction at this (RA, DEC) is (km/s)', delv
+    print('Velocity correction at this (RA, DEC) is (km/s)', delv)
     return vel_init+delv
  
