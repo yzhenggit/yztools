@@ -16,11 +16,11 @@ def vhelio2vlsr_Westmeier(vel_init, ral, decb, reverse=False, doradec=True):
     
     if doradec==True:
         c = SkyCoord(ral, decb, unit='deg')
-        l = c.galactic.l.value/180.*np.pi
-        b = c.galactic.b.value/180.*np.pi
+        l = np.radians(c.galactic.l.value)
+        b = np.radians(c.galactic.b.value)
     else:
-        l = ral/180.*np.pi
-        b = decb/180.*np.pi
+        l = np.radians(ral)
+        b = np.radians(decb)
     # vlsr 00> vhelio
     if reverse:
         delv = -(9*np.cos(l)*np.cos(b)+12*np.sin(l)*np.cos(b)+7*np.sin(b))
