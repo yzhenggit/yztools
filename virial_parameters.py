@@ -9,6 +9,7 @@ def virial_radius(Mh, Delta_c=200):
     
     Mh = Mh * const.M_sun
     rho_c = 3*Planck15.H0**2 / (8*np.pi*const.G) # critial density 3H^2/8piG
+    # rho_c = Planck15.critical_density0
     
     Rvir = (4*np.pi/3)**(-1/3) * Mh**(1/3) * Delta_c**(-1/3) * rho_c**(-1/3)
     
