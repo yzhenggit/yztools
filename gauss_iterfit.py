@@ -1,6 +1,7 @@
 ############################### 
 # Gaussian Fitting to a line 
 def gauss(x, A=1, mu=1, sigma=1):
+    import numpy as np
     return np.real(A * np.exp(-(x-mu)**2/(2*sigma**2)))
 
 def fit_direct(x, y, F=0, weighted=True, _weights=None):
