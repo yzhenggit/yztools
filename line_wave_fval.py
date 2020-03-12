@@ -18,8 +18,27 @@ def line_wave_fval(line):
 
     line_acc_wave = sub_info['Wavelength[A]'][ind]
     line_fval = sub_info['f_value'][ind]
+
+    line_info = {'wave': line_acc_wave,
+                 'fval': line_fval,
+                 'Ref': 'atom_wave_gamma_f.dat'}
+
     print('Input    ele  acc_wave fval')
     print(line, sub_info['Ion'][0], line_acc_wave, line_fval)
+
+    return line_info
+
+def import_lines():
+    '''
+    Load the lines of interest for COS-GAL
+    '''
+
+    defaultlines = ['PII 1152', 'FeII 1142', 'FeII 1143', 'FeII 1144', 'FeII 1608',
+                    'CII 1334', 'CIV 1548', 'CIV 1550',
+                    'SiII 1190', 'SiII 1193', 'SiII 1260', 'SiII 1304', 'SiII 1526',
+                    'SiIII 1206', 'SiIV 1393', 'SiIV 1402',
+                    'SII 1250', 'SII 1253', 'SII 1259', 'NV 1238', 'NV 1242']
+    return defaultlines
 
 def find_line_data_old(ionline):
     # this code has been abondoned. see find_line_data for a more extended lib.
@@ -121,4 +140,4 @@ def find_line_data_old(ionline):
 if __name__ == "__main__":
     import sys
     line = sys.argv[1]
-    line_wave_fval(line)
+    line_info = line_wave_fval(line)

@@ -2,7 +2,7 @@ import astropy.io.fits as fits
 import sys, re
 import numpy as np
 
-from yzSpec.find_line_data import import_lines
+from yztools.line_wave_fval import import_lines
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -10,18 +10,18 @@ logger = logging.getLogger(__name__)
 
 def read_linelibrary(lines='All', doprint=True):
     '''
-    For the input lines, find the wavelength and fval. 
+    For the input lines, find the wavelength and fval.
     '''
 
-    # find the path, read in the line library 
-    # xidl line library is really outdated I think, don't use this one. 
+    # find the path, read in the line library
+    # xidl line library is really outdated I think, don't use this one.
     import sys
     for ipath in sys.path:
         if 'GitRepo' in ipath:
             linepath = ipath
             break
     all_lin = fits.getdata(linepath+'/yzSpec/files/xidl_all_lin.fits')
-    # Lines that covered in G130 M, should really expand this later on. 
+    # Lines that covered in G130 M, should really expand this later on.
     if lines == 'All':
         dolines = import_lines()
     else:
@@ -49,13 +49,12 @@ def read_linelibrary(lines='All', doprint=True):
                 line_lambda.append(all_lin[j][1])
                 liblines.append(dolines[i])
 
-                # # FeII 1144. Check emails exchange with X.  
+                # # FeII 1144. Check emails exchange with X.
                 if liblines[-1] == 'FeII 1144': line_fval.append(0.083)
                 else: line_fval.append(all_lin[j][2])
-                
+
                 break
 
     if doprint == True: logger.info("Found these in our library: ",liblines)
-    line_ref = 'Morton (2003)'  
+    line_ref = 'Morton (2003)'
     return liblines, line_lambda, line_fval, line_ref
-
