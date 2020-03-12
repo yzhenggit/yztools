@@ -23,7 +23,10 @@ def discrete_map(cmap, cmin, cmax, cnum):
                  ticks=bounds[::2], boundaries=bounds)
     fig.savefig('new.pdf')
     ========================
-    Original code source: http://stackoverflow.com/questions/14777066/matplotlib-discrete-colorbar
+    Original code source: 
+    http://stackoverflow.com/questions/14777066/matplotlib-discrete-colorbar
+ 
+    Modified by Y. Zheng. 09, 2017. Columbia. 
     '''
 
     # cmap can be the name, or the actual map, e.g., plt.cm.bwr
