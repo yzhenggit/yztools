@@ -10,9 +10,9 @@ def gal2radec(l_deg, b_deg):
     ra_hms = gal_coord.icrs.ra.to_string(u.hour)
     dec_dms = gal_coord.icrs.dec.to_string(u.deg)
 
-    print(">> l, b =%.4f, %.4f"%(l_deg, b_deg))
-    print(">> ra, dec = %.4f, %.4f "%(ra_deg, dec_deg))
-    print(">> ra, dec = %s, %s"%(ra_hms, dec_dms))
+    print(">> l, b =%.4f  %.4f"%(l_deg, b_deg))
+    print(">> ra, dec = %.4f  %.4f "%(ra_deg, dec_deg))
+    print(">> ra, dec = %s  %s"%(ra_hms, dec_dms))
 
     return l_deg, b_deg, ra_deg, dec_deg, ra_hms, dec_dms
 

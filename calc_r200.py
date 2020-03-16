@@ -1,4 +1,4 @@
-def calc_r200(mstar = 0., mhalo = 1e12):
+def calc_r200(mstar = 0., mhalo = 1e12, use_who='M10'):
 
     """
     Assuming an isothermal sphere. Based on Joo's code.
@@ -11,9 +11,12 @@ def calc_r200(mstar = 0., mhalo = 1e12):
     import sys
 
     if mstar != 0:
-        from yztools.mstar2mhalo import mstar2mhalo
-        mhalo = mstar2mhalo(mstar)
-
+        if use_who == 'M10':
+            from yztools.mstar2mhalo import mstar2mhalo
+            mhalo = mstar2mhalo(mstar)
+        else: # 'GK14'
+            from yztools.mstar2mhalo_dwarfs import mstar2mhalo_dwarfs
+            mhalo = mstar2mhalo_dwarfs(mstar)
     # print(mhalo)
 
     mhalo = mhalo*u.Msun
@@ -37,4 +40,8 @@ if __name__ == "__main__":
     import sys
     import numpy as np
     mstar = np.float(sys.argv[1])
-    calc_r200(mstar = mstar)
+    if len(sys.argv) > 2:
+        use_who = sys.argv[2]
+    else:
+        use_who = 'M10'
+    calc_r200(mstar = mstar, use_who=use_who)

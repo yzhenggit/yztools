@@ -63,7 +63,7 @@ def search_mast_cos_stis(gal_name, gal_ra, gal_dec, gal_dist_kpc,
     gal_coord = SkyCoord(ra=gal_ra*u.deg, dec=gal_dec*u.deg)
     gal_l = gal_coord.galactic.l.degree
     gal_b = gal_coord.galactic.b.degree
-    print("*"*100)
+    print("*"*50)
     if search_r_deg == 0.:
         search_r_deg = kpc2deg(search_r_kpc, gal_dist_kpc)
         if search_r_deg > 30.:
