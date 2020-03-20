@@ -1,4 +1,4 @@
-def mstar2mhalo_dwarfs(mstar):
+def mstar2mhalo_dwarfs(mstar, do_print=False):
 
     """Garrison-Kimmel+2014a halo abundance matching for dwarfs logM*=6-8 """
 
@@ -16,13 +16,15 @@ def mstar2mhalo_dwarfs(mstar):
     from scipy import interpolate
     func = interpolate.interp1d(Mstar, Mhalo)
     mhalo = func(mstar)
-    print(">> logMh = %.2f (%.1e) for logMstar = %.2f (%.1e)"%(np.log10(mhalo), mhalo,
+
+    if do_print == True:
+        print(">> logMh = %.2f (%.1e) for logMstar = %.2f (%.1e)"%(np.log10(mhalo), mhalo,
                                                             np.log10(mstar), mstar))
-    print(">> Note that Garrison-Kimmel+2014a derivation is for logM*=6-8, see their eq4\n")
+        print(">> Note that Garrison-Kimmel+2014a derivation is for logM*=6-8, see their eq4\n")
     return mhalo
 
 if __name__ == "__main__":
     import sys
     import numpy as np
     mstar = np.float(sys.argv[1])
-    mstar2mhalo_dwarfs(mstar)
+    mstar2mhalo_dwarfs(mstar, do_print=True)

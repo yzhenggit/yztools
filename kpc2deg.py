@@ -1,4 +1,4 @@
-def kpc2deg(impact_kpc, distance_kpc, yes_print=True):
+def kpc2deg(impact_kpc, distance_kpc, do_print=False):
     """
     Calculation the angular size of certain length (impact) at distance (dist)
 
@@ -8,7 +8,7 @@ def kpc2deg(impact_kpc, distance_kpc, yes_print=True):
     # impact and dist both in kpc
     theta_deg = impact_kpc/(distance_kpc/206265)/3600
 
-    if yes_print == True:
+    if do_print == True:
         print('%.4f kpc at %.1f kpc is'%(impact_kpc, distance_kpc))
         print('%.4f deg'%(theta_deg))
         print('%.3f arcmin'%(theta_deg*60))
@@ -21,4 +21,4 @@ if __name__ == "__main__":
     import numpy as np
     impact_kpc = np.float(sys.argv[1])
     distance_kpc = np.float(sys.argv[2])
-    res = kpc2deg(impact_kpc, distance_kpc)
+    res = kpc2deg(impact_kpc, distance_kpc, do_print=True)

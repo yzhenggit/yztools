@@ -1,4 +1,4 @@
-def calc_r200(mstar = 0., mhalo = 1e12, use_who='M10'):
+def calc_r200(mstar = 0., mhalo = 1e12, use_who='M10', do_print=False):
 
     """
     Assuming an isothermal sphere. Based on Joo's code.
@@ -25,14 +25,18 @@ def calc_r200(mstar = 0., mhalo = 1e12, use_who='M10'):
     # calculate r200 with respect to critical density
     rho_c = Planck15.critical_density0
     r200_c = ((3*mhalo/(4.*np.pi*delta*rho_c))**(1./3.)).to(u.kpc)
-    print(">> If use critical density, delta_c=rho/rho_c=200")
-    print(">> r200c = %.2f kpc\n"%(r200_c.value))
+
+    if do_print == True:
+        print(">> If use critical density, delta_c=rho/rho_c=200")
+        print(">> r200c = %.2f kpc\n"%(r200_c.value))
 
     # calculate r200 with respect to matter density
     rho_m = Planck15.critical_density0 * Planck15.Om0
     r200_m = ((3*mhalo/(4.*np.pi*delta*rho_m))**(1./3.)).to(u.kpc)
-    print(">> If use critical MATTER density, delta_c=rho/(rho_c*Omega_m)=200")
-    print(">> r200m = %.2f kpc\n"%(r200_m.value))
+
+    if do_print == True:
+        print(">> If use critical MATTER density, delta_c=rho/(rho_c*Omega_m)=200")
+        print(">> r200m = %.2f kpc\n"%(r200_m.value))
 
     return r200_c, r200_m, mhalo.value
 
@@ -44,4 +48,4 @@ if __name__ == "__main__":
         use_who = sys.argv[2]
     else:
         use_who = 'M10'
-    calc_r200(mstar = mstar, use_who=use_who)
+    calc_r200(mstar = mstar, use_who=use_who, do_print=True)

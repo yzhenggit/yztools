@@ -1,5 +1,5 @@
 
-def gal2mscoord(l_deg, b_deg):
+def gal2mscoord(l_deg, b_deg, do_print=False):
     """
     Transform from galactic coordinates l, b to magellanic coordinates
 
@@ -18,8 +18,9 @@ def gal2mscoord(l_deg, b_deg):
     ms_l = ms_coords.L.deg
     ms_b = ms_coords.B.deg
 
-    print(">> l, b =%.2f   %.2f"%(l_deg, b_deg))
-    print(">> ms_l, ms_b = %.2f   %.2f (Nidever+2008)"%(ms_l, ms_b))
+    if do_print==True:
+        print(">> l, b =%.2f   %.2f"%(l_deg, b_deg))
+        print(">> ms_l, ms_b = %.2f   %.2f (Nidever+2008)"%(ms_l, ms_b))
     return ms_l, ms_b
 
 if __name__ == '__main__':
@@ -27,4 +28,4 @@ if __name__ == '__main__':
     import numpy as np
     l_deg = np.float(sys.argv[1])
     b_deg = np.float(sys.argv[2])
-    ms_l, ms_b = gal2mscoord(l_deg, b_deg)
+    ms_l, ms_b = gal2mscoord(l_deg, b_deg, do_print=True)

@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 ##############
-def vhelio2vlsr_Westmeier(vel_init, l_deg, b_deg, reverse=False):
+def vhelio2vlsr_Westmeier(vel_init, l_deg, b_deg, reverse=False, do_print=False):
     '''
     - from http://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php
     - l_deg:  should be in degree
@@ -27,13 +27,15 @@ def vhelio2vlsr_Westmeier(vel_init, l_deg, b_deg, reverse=False):
     if reverse == True:
         delv = -(9*np.cos(l)*np.cos(b)+12*np.sin(l)*np.cos(b)+7*np.sin(b))
         v_final = vel_init+delv
-        print("Input: vlsr=%.2f km/s, l_deg=%.4f, b_deg=%.4f"%(vel_init, l_deg, b_deg))
-        print("Output: vhelio=%.2f km/s"%(v_final))
+        if do_print == True:
+            print("Input: vlsr=%.2f km/s, l_deg=%.4f, b_deg=%.4f"%(vel_init, l_deg, b_deg))
+            print("Output: vhelio=%.2f km/s"%(v_final))
     else:
         delv = +9*np.cos(l)*np.cos(b)+12*np.sin(l)*np.cos(b)+7*np.sin(b)
         v_final = vel_init+delv
-        print("Input: vhelio=%.2f km/s, l_deg=%.4f, b_deg=%.4f"%(vel_init, l_deg, b_deg))
-        print("Output: vlsr=%.2f km/s"%(v_final))
+        if do_print == True:
+            print("Input: vhelio=%.2f km/s, l_deg=%.4f, b_deg=%.4f"%(vel_init, l_deg, b_deg))
+            print("Output: vlsr=%.2f km/s"%(v_final))
 
     # print 'Velocity correction at this (RA, DEC) is (km/s): ', delv
     return v_final
@@ -107,4 +109,4 @@ if __name__ == '__main__':
     l_deg = np.float(sys.argv[2])
     b_deg = np.float(sys.argv[3])
 
-    vhelio2vlsr_Westmeier(vel_init, l_deg, b_deg)
+    vhelio2vlsr_Westmeier(vel_init, l_deg, b_deg, do_print=True)

@@ -1,4 +1,4 @@
-def mstar2mhalo(mstar):
+def mstar2mhalo(mstar, do_print=False):
 
     """Moster+2010's halo abundance matching. Based on Joo's code. """
 
@@ -20,13 +20,15 @@ def mstar2mhalo(mstar):
     from scipy import interpolate
     func = interpolate.interp1d(Mstar, Mhalo)
     mhalo = func(mstar)
-    print(">> logMh = %.2f (%.1e) for logMstar = %.2f (%.1e)"%(np.log10(mhalo), mhalo,
+
+    if do_print == True:
+        print(">> logMh = %.2f (%.1e) for logMstar = %.2f (%.1e)"%(np.log10(mhalo), mhalo,
                                                             np.log10(mstar), mstar))
-    print(">> Note that Moster+2012 derivation is for logM*=8.5-11.85, see their p4\n")
+        print(">> Note that Moster+2012 derivation is for logM*=8.5-11.85, see their p4\n")
     return mhalo
 
 if __name__ == "__main__":
     import sys
     import numpy as np
     mstar = np.float(sys.argv[1])
-    mstar2mhalo(mstar)
+    mstar2mhalo(mstar, do_print=True)

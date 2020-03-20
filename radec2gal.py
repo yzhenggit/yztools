@@ -1,4 +1,4 @@
-def radec2gal(ra_deg, dec_deg):
+def radec2gal(ra_deg, dec_deg, do_print=False):
     """
     input:
     $ python radec2gal.py 30 50
@@ -24,9 +24,10 @@ def radec2gal(ra_deg, dec_deg):
     ra_hms = gal_coord.icrs.ra.to_string(u.hour)
     dec_dms = gal_coord.icrs.dec.to_string(u.deg)
 
-    print(">> ra, dec = %.4f  %.4f "%(ra_deg, dec_deg))
-    print(">> ra, dec = %s  %s"%(ra_hms, dec_dms))
-    print(">> l, b =%.4f  %.4f"%(l_deg, b_deg))
+    if do_print == True:
+        print(">> ra, dec = %.4f  %.4f "%(ra_deg, dec_deg))
+        print(">> ra, dec = %s  %s"%(ra_hms, dec_dms))
+        print(">> l, b =%.4f  %.4f"%(l_deg, b_deg))
 
     ## bonus, also do ms transformation ##
     from yztools.gal2mscoord import gal2mscoord
@@ -46,4 +47,4 @@ if __name__ == '__main__':
     ra_deg = np.float(sys.argv[1]) # deg
     dec_deg = np.float(sys.argv[2]) # deg
 
-    radec2gal(ra_deg, dec_deg)
+    radec2gal(ra_deg, dec_deg, do_print=True)
