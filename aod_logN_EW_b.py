@@ -50,7 +50,8 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
         from astropy import constants as const
         import astropy.units as u
         vel_arr = ((wave_arr-linewave_at_z)/linewave_at_z * const.c).to(u.km/u.s).value # km/s
-
+    else:
+        print("Seem like you have input an vel_arr, going to use it")
     # we only care about stuff within some velocity range as indicated by (vmin, vmax)
     vel_arr[np.isnan(vel_arr)] = -10000 # in case there are nan values, we don't include that
     indv = np.all([vel_arr>=vmin, vel_arr<=vmax], axis=0)
@@ -82,6 +83,7 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     # line 172 in COS-Halos IDL package, Lines/eqwrange.pro
     logN = np.log10(N)
     logNerr = np.log10(N+Nerr)-logN # line 172
+    logNerr_yz = Nerr/(N*np.log(10)) # through error propagation
 
     # get centroid velocity, the velocity where cumulative tau reaches 50%
     # line 136 in COS-Halos IDL package, Lines/eqwrange.pro
@@ -102,6 +104,8 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     # See Eq. 1 and 5 in ISM review by Savage+1996
     ew_mA = np.sum(dlambda*(1-flux_arr))*1000 # mA, line 111 in YongIDL/Lines/eqwrange.pro
     ewerr_mA = np.sqrt(np.sum((dlambda*err_arr)**2))*1000 # mA, line 120 in YongIDL/Lines/eqwrange.pro
+    N_ew = 1.13e17*ew_mA/(linefval*linewave**2)
+    logN_from_ew = np.log10(N_ew)
 
     res = {'v_cent': v_cent,
            'sigma_v': sigma_v,
@@ -110,21 +114,25 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
            'Nerr': Nerr,
            'logN': logN,
            'logNerr': logNerr,
+           'logNerr_yz': logNerr_yz,
            'EW_mA': ew_mA,
-           'EWerr_mA': ewerr_mA
+           'EWerr_mA': ewerr_mA,
+           'logN_from_ew': logN_from_ew
            }
 
     print('*'*60)
     print(">> v range in vsys: %.1f %.1f (vmin, vmax) km/s"%(vmin, vmax))
     print(">> v_cent: %.2f km/s"%(v_cent))
-    print(">> sigma_v: %.2f km/s"%(sigma_v))
-    print(">> b   : %.2f km/s = sqrt(sigv)"%(doppler_b))
+    print(">> b   : %.2f km/s = sqrt(2)*sigv"%(doppler_b))
     print(">> EW  : %.1f,  %.1f,  %.1f sigma (EW, eEW, EW/eEW) mA"%(ew_mA, ewerr_mA, ew_mA/ewerr_mA))
     print('>> N   : %.2e cm-2'%(N))
     print(">> Nerr: %.2e cm-2"%(Nerr))
     print('>> logN: %.2f'%(logN))
-    print('>> elogN: %.2f = np.log10(N+Nerr)-logN'%(logNerr))
+    print('>> logN (from EW): %.2e cm-2, log10=%.2f'%(N_ew, logN_from_ew))
+    print('>> elogN: %.2f = np.log10(N+Nerr)-logN (COS-Halos)'%(logNerr))
+    print('>> elogN_yz: %.2f = Nerr/(N*ln10) (error propagation)'%(logNerr_yz))
     print(">> logN_2sig: %.2f = np.log10(N+2*Nerr)"%(np.log10(N+2*Nerr)))
+    print(">> logN_3sig: %.2f = np.log10(N+3*Nerr)"%(np.log10(N+3*Nerr)))
     print('*'*60)
 
     return res

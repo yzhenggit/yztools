@@ -7,6 +7,8 @@ def line_wave_fval(line):
     import numpy as np
     import re
 
+    if line == 'FeII1144': 
+        line = 'FeII1145'
     # line = 'SiIV1393'
     line_ele = re.split('(\d+)',line.replace(' ', ''))[0]
     line_wave = int(re.split('(\d+)',line.replace(' ', ''))[1])

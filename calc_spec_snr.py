@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib as mpl
 mpl.rcParams['font.family'] = 'stixgeneral'
 
-def calc_spec_snr(wave, flux, error,
+def calc_spec_snr(wave, flux, error, continuum=[],
                   dlambda=10, npix_per_res=6, figname='',
                   snr_sample_point=[1120, 1170, 1280,
                                      1350, 1490,
@@ -33,30 +33,49 @@ def calc_spec_snr(wave, flux, error,
     #if target == 'PG0044+030':
     #    ssnr_sample_point = np.array([1120, 1170, 1370, 1470, 1520, 1620])
 
-    all_snr = np.zeros(len(snr_sample_point))
-    for i, left in enumerate(snr_sample_point):
-        right = left+dlambda
-        ind = np.all([wave>left, wave<right], axis=0)
-        if len(flux[ind]) == 0 or np.nanmedian(error[ind])==0:
-            all_snr[i] = np.nan
-        else:
-            all_snr[i] = np.nanmedian(flux[ind])/np.nanmedian(error[ind])*np.sqrt(npix_per_res)
-        print("%d A:  %.1f"%(snr_sample_point[i], all_snr[i]))
-    print("Mean: %.1f"%(np.nanmean(all_snr)))
-
     ###### now plot things! #####
-    fig = plt.figure(figsize=(5, 4))
+    fig = plt.figure(figsize=(10, 4))
     ax = fig.add_subplot(111)
-    fs = 18
+    fs = 16
 
-    ax.plot(snr_sample_point, all_snr, color=plt.cm.Reds(0.8), marker='o',
-            linestyle='-', label='<SNR>=%.1f'%(np.nanmean(all_snr)))
-    ax.set_xlim(1100, 1700)
-    ax.legend(fontsize=fs-2)
+    ax.plot(wave, flux, color='k', lw=0.1, label='coadded spec')
+    ax.plot(wave, error, color=plt.cm.Greys(0.3), lw=0.1, label='coadd error')
+    if len(continuum) > 0:
+        ax.plot(wave, continuum, color='r', lw=0.5, label='continuum')
+
+    ymin=0
+    ymax = np.nanmedian(flux)*5
+    #ax.plot(snr_sample_point, all_snr, color=plt.cm.Reds(0.8), marker='o',
+    #        linestyle='-', label='<SNR>=%.1f'%(np.nanmean(all_snr)))
+    if 'bin3' not in figname:
+        ### if bin3 filter is kinda corase, works for now, but might want to change later
+        # YZ, 04/20/2020.
+        all_snr = np.zeros(len(snr_sample_point))
+        for i, left in enumerate(snr_sample_point):
+            right = left+dlambda
+            ind = np.all([wave>left, wave<right], axis=0)
+            if len(flux[ind]) == 0 or np.nanmedian(error[ind])==0:
+                all_snr[i] = np.nan
+            else:
+                all_snr[i] = np.nanmedian(flux[ind])/np.nanmedian(error[ind])*np.sqrt(npix_per_res)
+            print("%d A:  %.1f"%(snr_sample_point[i], all_snr[i]))
+        print("Mean: %.1f"%(np.nanmean(all_snr)))
+
+        for i, left in enumerate(snr_sample_point):
+            right = left+dlambda
+            ax.fill_between([left, right], ymin, ymax, color=plt.cm.Blues(0.6), alpha=0.7, label=None)
+            ax.text(left, ymax*0.7, 'SNR=%.1f'%(all_snr[i]), rotation=90)
+            ax.set_title("Mean SNR: %.1f"%(np.nanmean(all_snr)))
+    else:
+        all_snr = []
+
+    ax.set_xlim(np.nanmin(wave)-20, np.nanmax(wave)+20)
+    ax.set_ylim(ymin, ymax)
+    ax.legend(fontsize=fs-4)
     ax.minorticks_on()
     ax.grid('on', linestyle='--')
     ax.set_xlabel('Wavelength (A)', fontsize=fs)
-    ax.set_ylabel('SNR per res', fontsize=fs)
+    ax.set_ylabel('Flux', fontsize=fs)
 
     for tick in ax.xaxis.get_major_ticks():
         tick.label.set_fontsize(fs-4)
@@ -159,6 +178,8 @@ if __name__ == '__main__':
     import sys
     import os
     # import astropy.io.fits as fits
+    # e.g.;
+    # python calc_spec_snr.py /Users/Yong/Dropbox/GitRepo/IC1613/targets/IC1613-A13/hsla/IC1613-A13_coadd_FUVM_final_lpALL.fits
 
     filename = sys.argv[1]
     from linetools.spectra import io as tio
