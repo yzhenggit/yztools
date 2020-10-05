@@ -9,7 +9,7 @@ def deg2kpc(theta_deg, distance_kpc, do_print=False):
     impact_kpc = theta_deg * (distance_kpc/206265) * 3600
     if do_print == True:
         print('%.4f deg at %.1f kpc is'%(theta_deg, distance_kpc))
-        print('%.2f kpc'%(impact_kpc))
+        print('%.4f kpc'%(impact_kpc))
     return impact_kpc
 
 if __name__ == "__main__":
