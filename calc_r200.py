@@ -2,6 +2,7 @@ def calc_r200(mhalo, do_print=False):
 
     """
     Assuming an isothermal sphere. Based on Joo's code.
+    mhalo is linear
     """
 
     import astropy.constants as const

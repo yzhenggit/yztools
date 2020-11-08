@@ -22,5 +22,7 @@ print("Check ", figname)
 
 if len(sys.argv) > 1:
     iz = np.float(sys.argv[1])
-    iage = cosmo.age(iz)
-    print("Age since BB is %.2f Gyrs at z=%.3f"%(iage.value, iz))
+    iage = cosmo.age(iz).value
+    age0 = cosmo.age(0).value
+    offset = age0 - iage
+    print("Age since BB is %.2f Gyrs at z=%.3f (or %.3f Gyrs=%.3f - %.3f)"%(iage, iz, offset, age0, iage))

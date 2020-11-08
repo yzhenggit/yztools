@@ -1,6 +1,8 @@
 def mstar2mhalo(mstar, do_print=False):
 
-    """Moster+2010's halo abundance matching. Based on Joo's code. """
+    """
+    Moster+2010's halo abundance matching. Based on Joo's code. 
+    """
 
     import astropy.constants as const
     from astropy.cosmology import Planck15
@@ -11,7 +13,8 @@ def mstar2mhalo(mstar, do_print=False):
     mM0 = 0.0282
     beta = 1.06
     gamma = 0.556
-    Mhalo = 10**np.arange(7,13,0.001)
+    # Mhalo = 10**np.arange(7,13,0.001)
+    Mhalo = 10**np.arange(6,14,0.001)
 
     # from moster equation 2
     Mstar = Mhalo * (2.*mM0*((Mhalo/M1)**(-beta)+(Mhalo/M1)**(gamma))**(-1.))
@@ -24,7 +27,7 @@ def mstar2mhalo(mstar, do_print=False):
     if do_print == True:
         print(">> logMh = %.2f (%.1e) for logMstar = %.2f (%.1e)"%(np.log10(mhalo), mhalo,
                                                             np.log10(mstar), mstar))
-        print(">> Note that Moster+2012 derivation is for logM*=8.5-11.85, see their p4\n")
+        print(">> Note that Moster+2010 derivation is for logM*=8.5-11.85, see their p4\n")
     return mhalo
 
 if __name__ == "__main__":
