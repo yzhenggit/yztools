@@ -16,6 +16,7 @@ def arcmin2mpc_input_z(theta_arcmin, redshift, do_print=False):
     linear_size_1arcsec_at_z = dA/206264.8
     impact_mpc = theta_arcmin*60*linear_size_1arcsec_at_z
     if do_print == True:
+        print('*'*60)
         print('Input: ')
         print('    z = %.4f'%(redshift))
         print('    theta=%.2f arcmin, %.1f arcsec'%(theta_arcmin, theta_arcmin*60))
@@ -23,6 +24,7 @@ def arcmin2mpc_input_z(theta_arcmin, redshift, do_print=False):
         print('    dA = %.2f Mpc'%(dA.value))
         print('    dL = %.2f Mpc'%(dL.value))
         print('    %.2f arcmin = %.6f mpc / %.2f kpc'%(theta_arcmin, impact_mpc.value, impact_mpc.value*1000))
+        print('(Planck15: H0=67.8 km/s/Mpc, Omeba_b = 0.484, Omega_Lambda=0.692, Omega_m=0.308)')
     return impact_mpc, dL, dA
 
 if __name__ == "__main__":
