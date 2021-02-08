@@ -39,7 +39,7 @@ def calc_r200(mhalo, do_print=False):
         print(">> If use critical MATTER density, delta_c=rho/(rho_c*Omega_m)=200")
         print(">> r200m = %.2f kpc\n"%(r200_m.value))
 
-    return r200_c, r200_m, mhalo.value
+    return r200_c, r200_m
 
 if __name__ == "__main__":
     import sys

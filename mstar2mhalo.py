@@ -14,7 +14,7 @@ def mstar2mhalo(mstar, do_print=False):
     beta = 1.06
     gamma = 0.556
     # Mhalo = 10**np.arange(7,13,0.001)
-    Mhalo = 10**np.arange(6,14,0.001)
+    Mhalo = 10**np.arange(6,15,0.001)
 
     # from moster equation 2
     Mstar = Mhalo * (2.*mM0*((Mhalo/M1)**(-beta)+(Mhalo/M1)**(gamma))**(-1.))

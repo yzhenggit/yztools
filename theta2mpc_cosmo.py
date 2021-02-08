@@ -5,7 +5,14 @@
 def arcmin2mpc_input_z(theta_arcmin, redshift, do_print=False):
     """
     Calculation the linear size (mpc) of a subject wtih angular size of
-    theta_arcminat redshift z
+    theta at redshift z
+
+    Output: angular separation in Mpc,
+            luminosity distance d_L in Mpc,
+            angular diameter distance d_A in Mpc
+
+    Example:
+    command line: $python theta2mpc_cosmo.py 33 arcsec z 0.2
     """
     # impact and dist both in kpc
     from astropy.cosmology import Planck15 as cosmo
