@@ -2,7 +2,7 @@
 # consistent result of logNaod and EW. - Y. Zheng, UCB, 2019/07/25
 
 def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
-                  target_z=0.0, vel_arr=[]):
+                  target_z=0.0, vel_arr=[], print_output=False):
     """
     Calculate column density, EW, and b for an input line arrays
 
@@ -40,18 +40,21 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     linewave = lineinfo['wave']
     linefval = lineinfo['fval']
     linewave_at_z = linewave*(1+target_z)
-    print('>> %s  lambda=%.4f  fval=%.4f'%(linename, linewave, linefval))
-    print('>> Line shift to lambda=%.4f at z=%.4f'%(linewave_at_z, target_z))
+    if print_output == True:
+        print('>> %s  lambda=%.4f  fval=%.4f'%(linename, linewave, linefval))
+        print('>> Line shift to lambda=%.4f at z=%.4f'%(linewave_at_z, target_z))
 
     # if velocity array is imported, we use that directly, otherwise
     # we convert wavelength to velocity for the particular line
     if len(vel_arr) == 0:
-        print("there is no imported velocity array, so I am going to calculate that from wave_arr")
+        if print_output == True:
+            print("there is no imported velocity array, so I am going to calculate that from wave_arr")
         from astropy import constants as const
         import astropy.units as u
         vel_arr = ((wave_arr-linewave_at_z)/linewave_at_z * const.c).to(u.km/u.s).value # km/s
     else:
-        print("Seem like you have input an vel_arr, going to use it")
+        if print_output == True:
+            print("Seem like you have input an vel_arr, going to use it")
     # we only care about stuff within some velocity range as indicated by (vmin, vmax)
     vel_arr[np.isnan(vel_arr)] = -10000 # in case there are nan values, we don't include that
     indv = np.all([vel_arr>=vmin, vel_arr<=vmax], axis=0)
@@ -120,19 +123,20 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
            'logN_from_ew': logN_from_ew
            }
 
-    print('*'*60)
-    print(">> v range in vsys: %.1f %.1f (vmin, vmax) km/s"%(vmin, vmax))
-    print(">> v_cent: %.2f km/s"%(v_cent))
-    print(">> b   : %.2f km/s = sqrt(2)*sigv"%(doppler_b))
-    print(">> EW  : %.1f,  %.1f,  %.1f sigma (EW, eEW, EW/eEW) mA"%(ew_mA, ewerr_mA, ew_mA/ewerr_mA))
-    print('>> N   : %.2e cm-2'%(N))
-    print(">> Nerr: %.2e cm-2"%(Nerr))
-    print('>> logN: %.2f'%(logN))
-    print('>> logN (from EW): %.2e cm-2, log10=%.2f'%(N_ew, logN_from_ew))
-    print('>> elogN: %.2f = np.log10(N+Nerr)-logN (COS-Halos)'%(logNerr))
-    print('>> elogN_yz: %.2f = Nerr/(N*ln10) (error propagation)'%(logNerr_yz))
-    print(">> logN_2sig: %.2f = np.log10(N+2*Nerr)"%(np.log10(N+2*Nerr)))
-    print(">> logN_3sig: %.2f = np.log10(N+3*Nerr)"%(np.log10(N+3*Nerr)))
-    print('*'*60)
+    if print_output == True:
+        print('*'*60)
+        print(">> v range in vsys: %.1f %.1f (vmin, vmax) km/s"%(vmin, vmax))
+        print(">> v_cent: %.2f km/s"%(v_cent))
+        print(">> b   : %.2f km/s = sqrt(2)*sigv"%(doppler_b))
+        print(">> EW  : %.1f,  %.1f,  %.1f sigma (EW, eEW, EW/eEW) mA"%(ew_mA, ewerr_mA, ew_mA/ewerr_mA))
+        print('>> N   : %.2e cm-2'%(N))
+        print(">> Nerr: %.2e cm-2"%(Nerr))
+        print('>> logN: %.2f'%(logN))
+        print('>> logN (from EW): %.2e cm-2, log10=%.2f'%(N_ew, logN_from_ew))
+        print('>> elogN: %.2f = np.log10(N+Nerr)-logN (COS-Halos)'%(logNerr))
+        print('>> elogN_yz: %.2f = Nerr/(N*ln10) (error propagation)'%(logNerr_yz))
+        print(">> logN_2sig: %.2f = np.log10(N+2*Nerr)"%(np.log10(N+2*Nerr)))
+        print(">> logN_3sig: %.2f = np.log10(N+3*Nerr)"%(np.log10(N+3*Nerr)))
+        print('*'*60)
 
     return res
