@@ -2,12 +2,12 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def line_wave_fval(line):
+def line_wave_fval(line, print_output=True):
     from astropy.table import Table
     import numpy as np
     import re
 
-    if line == 'FeII1144': 
+    if line == 'FeII1144':
         line = 'FeII1145'
     # line = 'SiIV1393'
     line_ele = re.split('(\d+)',line.replace(' ', ''))[0]
@@ -25,8 +25,9 @@ def line_wave_fval(line):
                  'fval': line_fval,
                  'Ref': 'atom_wave_gamma_f.dat'}
 
-    print('Input    ele  acc_wave fval')
-    print(line, sub_info['Ion'][0], line_acc_wave, line_fval)
+    if print_output ==  True:
+        print('Input    ele  acc_wave fval')
+        print(line, sub_info['Ion'][0], line_acc_wave, line_fval)
 
     return line_info
 
