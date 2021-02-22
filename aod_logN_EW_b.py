@@ -127,6 +127,16 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     sigma_v = np.sqrt(top_part/bot_part)
     doppler_b = np.sqrt(2) * sigma_v
 
+    # find the undertainty for sigma_v and b using error proporgation
+    x = np.sum((vel_arr - vc)**2 * tau_v * dv)
+    y = np.sum(tau_v*dv)
+    sig_x = np.sqrt(np.sum((tauerr_v*dv)**2))
+    sig_y = np.sqrt(np.sum((2*(vel_arr-vc)*vcerr*tau_v*dv)**2 +
+                            ((vel_arr-vc)**2*tauerr_v*dv)**2))
+    err_sigma_v = 1/(2*sigma_v)*np.sqrt((sig_x/x)**2 + (sig_y/y)**2)
+    err_b = np.sqrt(2)*err_sigma_v
+
+
     # get Equivalent width over the same velocity range
     # See Eq. 1 and 5 in ISM review by Savage+1996
     ew_mA = np.sum(dlambda*(1-flux_arr))*1000 # mA, line 111 in YongIDL/Lines/eqwrange.pro
@@ -137,7 +147,9 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     res = {'vc': vc, # apparent optical depth weighted
            'vcerr': vcerr,
            'sigma_v': sigma_v,
+           'sigma_verr': err_sigma_v,
            'b': doppler_b,
+           'berr': err_b,
            'N': N,
            'Nerr': Nerr,
            'logN': logN,
@@ -151,7 +163,7 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
         print('*'*60)
         print(">> vsys range: [%.1f, %.1f] km/s"%(vmin, vmax))
         print(">> vc: %.2f+/-%.2f km/s (tau weighted)"%(vc, vcerr))
-        print(">> b   : %.2f km/s (= sqrt(2)*sigv)"%(doppler_b))
+        print(">> b   : %.2f+/-%.2f km/s (= sqrt(2)*sigv)"%(doppler_b, err_b))
         print(">> EW  : %.1f+/-%.1f mA (%.1f sigma)"%(ew_mA, ewerr_mA, ew_mA/ewerr_mA))
         print('>> N   : %.2e cm-2'%(N))
         print(">> Nerr: %.2e cm-2"%(Nerr))
