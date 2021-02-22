@@ -28,6 +28,8 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     > aod_logN_EW_b(wave, flux, err, linename, vmin, vmax, target_z=vhelio/speed_of_light)
 
     History:
+    02/22/2021, update logN, v, b, EW methods and related errors, see
+            google doc - HST/COS spectral data reduction
     03/17/2020, put together into a module, YZ. Most of the stuff are from the COS
     Halos IDL package, see Lines/eqwrange.pro
 
@@ -36,7 +38,7 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
 
     # get line info
     from yztools.line_wave_fval import line_wave_fval
-    lineinfo = line_wave_fval(linename.replace(' ', ''))
+    lineinfo = line_wave_fval(linename.replace(' ', ''), print_output=print_output)
     linewave = lineinfo['wave']
     linefval = lineinfo['fval']
     linewave_at_z = linewave*(1+target_z)
@@ -48,7 +50,7 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     # we convert wavelength to velocity for the particular line
     if len(vel_arr) == 0:
         if print_output == True:
-            print("there is no imported velocity array, so I am going to calculate that from wave_arr")
+            print("no imported velocity array found; calculate from wave_arr")
         from astropy import constants as const
         import astropy.units as u
         vel_arr = ((wave_arr-linewave_at_z)/linewave_at_z * const.c).to(u.km/u.s).value # km/s
@@ -62,6 +64,14 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     wave_arr = wave_arr[indv]
     flux_arr = flux_arr[indv]
     err_arr = err_arr[indv]
+
+    # if flux is lower than the err, this line is saturated, then
+    # we take the error value instead.
+    # See line 90-92 in COS-Halos IDL package, Lines/eqwrange.pro
+    flux_less_than_err = flux_arr<=err_arr
+    if len(flux_arr[flux_less_than_err]) != 0:
+        # print('    this one')
+        flux_arr[flux_less_than_err] = err_arr[flux_less_than_err]
 
     # get the velocity and wave_arr intevals
     dv = vel_arr[1:]-vel_arr[:-1]
@@ -82,23 +92,37 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     Nerr_v = 3.768e14*tauerr_v/linewave/linefval  # line 160
     Nerr = np.sqrt(np.sum((Nerr_v*dv)**2))  # line 164
 
-    # get logN and sig_logN
-    # line 172 in COS-Halos IDL package, Lines/eqwrange.pro
-    logN = np.log10(N)
-    logNerr = np.log10(N+Nerr)-logN # line 172
-    logNerr_yz = Nerr/(N*np.log(10)) # through error propagation
+    # test
+    # print(np.log10(N), np.log10(Nerr))
 
-    # get centroid velocity, the velocity where cumulative tau reaches 50%
-    # line 136 in COS-Halos IDL package, Lines/eqwrange.pro
-    cum_tau_v = np.zeros(tau_v.size)
-    for i in range(tau_v.size):
-        cum_tau_v[i] = tau_v[:(i+1)].sum()/tau_v.sum()
-    ind50 = np.argmin(np.fabs(cum_tau_v-0.5))
-    v_cent = vel_arr[ind50]
+    # get logN and sig_logN
+    logN = np.log10(N)
+    logNerr = Nerr/(N*np.log(10)) # through error propagation
+
+    # note that COS-Halos (line 172 in Lines/eqwrange.pro) use
+    # logNerr = np.log10(N+Nerr)-logN # line 172
+
+    # get centroid velocity, as weighted by apparent optical depth
+    #  as Zheng+2019
+    vc = (vel_arr*tau_v*dv).sum()/np.fabs(np.sum(tau_v*dv))
+
+    # error for vc_tauwt, same as Zheng+2019
+    pA = (vel_arr*tau_v*dv).sum()
+    sigpA = np.sqrt(np.sum((vel_arr*tauerr_v*dv)**2))
+    # note that tauerr/tau = Nerr/N
+    vcerr = np.fabs(vc)*np.sqrt((sigpA/pA)**2 + (Nerr/N)**2)
+
+    # note that COS-Halos defineds vc as where cumulative tau reaches 50%
+    # see line 136 in COS-Halos IDL package, Lines/eqwrange.pro
+    #cum_tau_v = np.zeros(tau_v.size)
+    #for i in range(tau_v.size):
+    #    cum_tau_v[i] = tau_v[:(i+1)].sum()/tau_v.sum()
+    #ind50 = np.argmin(np.fabs(cum_tau_v-0.5))
+    #vc_tau50 = vel_arr[ind50]
 
     # get sigma v and line width from the profile
     # based on line 138-143; and page 2 in Heckman et al. 2002, ApJ, 577:691
-    top_part = np.sum((vel_arr-v_cent)**2 * tau_v * dv)
+    top_part = np.sum((vel_arr-vc)**2 * tau_v * dv)
     bot_part = np.sum(tau_v * dv)
     sigma_v = np.sqrt(top_part/bot_part)
     doppler_b = np.sqrt(2) * sigma_v
@@ -110,14 +134,14 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
     N_ew = 1.13e17*ew_mA/(linefval*linewave**2)
     logN_from_ew = np.log10(N_ew)
 
-    res = {'v_cent': v_cent,
+    res = {'vc': vc, # apparent optical depth weighted
+           'vcerr': vcerr,
            'sigma_v': sigma_v,
            'b': doppler_b,
            'N': N,
            'Nerr': Nerr,
            'logN': logN,
            'logNerr': logNerr,
-           'logNerr_yz': logNerr_yz,
            'EW_mA': ew_mA,
            'EWerr_mA': ewerr_mA,
            'logN_from_ew': logN_from_ew
@@ -125,16 +149,14 @@ def aod_logN_EW_b(wave_arr, flux_arr, err_arr, linename, vmin, vmax,
 
     if print_output == True:
         print('*'*60)
-        print(">> v range in vsys: %.1f %.1f (vmin, vmax) km/s"%(vmin, vmax))
-        print(">> v_cent: %.2f km/s"%(v_cent))
-        print(">> b   : %.2f km/s = sqrt(2)*sigv"%(doppler_b))
-        print(">> EW  : %.1f,  %.1f,  %.1f sigma (EW, eEW, EW/eEW) mA"%(ew_mA, ewerr_mA, ew_mA/ewerr_mA))
+        print(">> vsys range: [%.1f, %.1f] km/s"%(vmin, vmax))
+        print(">> vc: %.2f+/-%.2f km/s (tau weighted)"%(vc, vcerr))
+        print(">> b   : %.2f km/s (= sqrt(2)*sigv)"%(doppler_b))
+        print(">> EW  : %.1f+/-%.1f mA (%.1f sigma)"%(ew_mA, ewerr_mA, ew_mA/ewerr_mA))
         print('>> N   : %.2e cm-2'%(N))
         print(">> Nerr: %.2e cm-2"%(Nerr))
-        print('>> logN: %.2f'%(logN))
-        print('>> logN (from EW): %.2e cm-2, log10=%.2f'%(N_ew, logN_from_ew))
-        print('>> elogN: %.2f = np.log10(N+Nerr)-logN (COS-Halos)'%(logNerr))
-        print('>> elogN_yz: %.2f = Nerr/(N*ln10) (error propagation)'%(logNerr_yz))
+        print('>> logN: %.2f (%.2f from EW)'%(logN, logN_from_ew))
+        print('>> logNerr: %.2f = Nerr/(N*ln10)'%(logNerr))
         print(">> logN_2sig: %.2f = np.log10(N+2*Nerr)"%(np.log10(N+2*Nerr)))
         print(">> logN_3sig: %.2f = np.log10(N+3*Nerr)"%(np.log10(N+3*Nerr)))
         print('*'*60)
