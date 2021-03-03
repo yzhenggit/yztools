@@ -47,7 +47,10 @@ def calc_spec_snr(wave, flux, error, continuum=[],
     ymax = np.nanmedian(flux)*5
     #ax.plot(snr_sample_point, all_snr, color=plt.cm.Reds(0.8), marker='o',
     #        linestyle='-', label='<SNR>=%.1f'%(np.nanmean(all_snr)))
+    # print("I am above!")
+    # if 'bin3' not in figname:
     if 'bin3' not in figname:
+        # print("I am here!")
         ### if bin3 filter is kinda corase, works for now, but might want to change later
         # YZ, 04/20/2020.
         all_snr = np.zeros(len(snr_sample_point))
@@ -68,6 +71,7 @@ def calc_spec_snr(wave, flux, error, continuum=[],
             ax.set_title("Mean SNR: %.1f"%(np.nanmean(all_snr)))
     else:
         all_snr = []
+        print("this file has been binned, please use original file becasue I compute SNR per res (npix=6)")
 
     ax.set_xlim(np.nanmin(wave)-20, np.nanmax(wave)+20)
     ax.set_ylim(ymin, ymax)
