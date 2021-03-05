@@ -22,6 +22,7 @@ def arcmin2mpc_input_z(theta_arcmin, redshift, do_print=False):
     dA = cosmo.angular_diameter_distance(redshift) # mpc
     linear_size_1arcsec_at_z = dA/206264.8
     impact_mpc = theta_arcmin*60*linear_size_1arcsec_at_z
+    impact_kpc = impact_mpc*1000
     if do_print == True:
         print('*'*60)
         print('Input: ')
@@ -32,7 +33,14 @@ def arcmin2mpc_input_z(theta_arcmin, redshift, do_print=False):
         print('    dL = %.2f Mpc'%(dL.value))
         print('    %.2f arcmin = %.6f mpc / %.2f kpc'%(theta_arcmin, impact_mpc.value, impact_mpc.value*1000))
         print('(Planck15: H0=67.8 km/s/Mpc, Omeba_b = 0.484, Omega_Lambda=0.692, Omega_m=0.308)')
-    return impact_mpc, dL, dA
+
+    result = {'input_arcsec':theta_arcmin*60,
+              'input_arcmin':theta_arcmin,
+              'impact_kpc': impact_kpc.value,
+              'input_z': redshift,
+              'dL_mpc': dL,
+              'dA_mpc': dA}
+    return result 
 
 if __name__ == "__main__":
     import sys
