@@ -8,7 +8,7 @@ def search_uvqs_qso_catalog(gal_name, gal_coord1, gal_coord2, gal_dist_kpc,
     gal_dist_kpc: distance of host galaxy, in unit of kpc
     within_radius_kpc: search sightlines within this radius, in unit of kpc
 
-    example: 
+    example:
     $ python search_uvqs_qso_catalog.py GALNAME galactic 21.174329 -21.573309 8000 300
     """
     import sys
