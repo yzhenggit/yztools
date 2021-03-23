@@ -1,13 +1,17 @@
-def search_uvqs_qso_catalog(gal_name, gal_ra, gal_dec, gal_dist_kpc, within_radius_kpc=100):
+def search_uvqs_qso_catalog(gal_name, gal_coord1, gal_coord2, gal_dist_kpc,
+                            frame='icrs',
+                            within_radius_kpc=100):
     """
-    Search new QSOs within certain radius of (gal_ra, gal_dec) from UVQS catalog.
-
-    gal_ra: ra of host galaxy, in unit of degree
-    gal_dec: dec of host galaxy, in unit of degree
+    Search new QSOs within certain radius of (gal_coord1, gal_coord1) from UVQS catalog.
+    when frame=icrs, gal_coord1 = ra, gal_coord2 = dec, in unit of deg
+    when frame = galactic, gal_coord1 = gl, gal_coord_coord2 = gb, in unit of deg
     gal_dist_kpc: distance of host galaxy, in unit of kpc
     within_radius_kpc: search sightlines within this radius, in unit of kpc
-    """
 
+    example: 
+    $ python search_uvqs_qso_catalog.py GALNAME galactic 21.174329 -21.573309 8000 300
+    """
+    import sys
     import numpy as np
     import astropy.units as u
     from astropy.coordinates import SkyCoord
@@ -15,10 +19,18 @@ def search_uvqs_qso_catalog(gal_name, gal_ra, gal_dec, gal_dist_kpc, within_radi
     from astropy.table import Table
 
     # coordinate setup for central galaxy
-    gal_coord = SkyCoord(ra=gal_ra*u.deg, dec=gal_dec*u.deg, frame='icrs', distance=gal_dist_kpc*u.kpc)
+    if frame.lower() == 'icrs':
+        gal_coord = SkyCoord(ra=gal_coord1*u.deg, dec=gal_coord2*u.deg, frame='icrs', distance=gal_dist_kpc*u.kpc)
+    elif frame.lower() in ['galactic', 'gal', 'g']:
+        gal_coord = SkyCoord(l=gal_coord1*u.deg, b=gal_coord2*u.deg, frame='galactic', distance=gal_dist_kpc*u.kpc)
+    else:
+        print("Do no recognize frame:%d. "%(frame))
+        sys.exit(0)
+
     print("*"*90)
     print("Searching QSO (UVQS) within %.1f kpc of %s (RA=%.4f, DEC=%.4f, l=%.4f, b=%.4f)"%(within_radius_kpc,
-                           gal_name, gal_ra, gal_dec, gal_coord.galactic.l.degree, gal_coord.galactic.b.degree))
+                           gal_name, gal_coord.icrs.ra.degree, gal_coord.icrs.dec.degree,
+                           gal_coord.galactic.l.degree, gal_coord.galactic.b.degree))
 
     # read in the QSO catalog
     cat_dir = '/Users/Yong/Dropbox/Databucket'
@@ -58,3 +70,17 @@ def search_uvqs_qso_catalog(gal_name, gal_ra, gal_dec, gal_dist_kpc, within_radi
             print('%25s  %6.2f  %6.3f  %10.4f  %10.4f  %10.4f  %10.4f  %7.1f(%.2f)'%(c1[k], c2[k], c3[k], c4[k], c5[k],
                                                                                c6[k], c7[k], c8[k], c9[k]))
     print("\n")
+
+if __name__ == '__main__':
+    import sys
+    import numpy as np
+
+    gal_name = sys.argv[1]
+    frame = sys.argv[2]  # 'icrs' or 'galactic'
+    gal_coord1 = np.float(sys.argv[3]) # deg, ra, or gl
+    gal_coord2 = np.float(sys.argv[4]) # deg, ra, or gb
+    gal_dist_kpc = np.float(sys.argv[5])  # kpc
+    within_radius_kpc = np.float(sys.argv[6]) # kpc
+
+    search_uvqs_qso_catalog(gal_name, gal_coord1, gal_coord2, gal_dist_kpc,
+                            frame=frame, within_radius_kpc=within_radius_kpc)
