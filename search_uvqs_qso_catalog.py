@@ -47,6 +47,7 @@ def search_uvqs_qso_catalog(gal_name, gal_coord1, gal_coord2, gal_dist_kpc,
 
     if len(found_id) == 0:
         print("Found nothing.")
+        results = {}
     else:
         print("%25s  %6s  %6s  %10s  %10s  %10s  %10s  %7s"%('QSO', 'FUVmag', 'z', 'ra', 'dec', 'l', 'b', 'impact'))
         c1, c2, c3, c4, c5, c6, c7, c8, c9 = [], [], [], [], [], [], [], [], []
@@ -65,11 +66,21 @@ def search_uvqs_qso_catalog(gal_name, gal_coord1, gal_coord2, gal_dist_kpc,
             c8.append(impact.kpc)
             c9.append(impact.kpc/within_radius_kpc)
 
+
         sortinds = np.argsort(c8)
+        results = {'QSO': np.asarray(c1)[sortinds],
+                   'FUVmag': np.asarray(c2)[sortinds],
+                   'z': np.asarray(c3)[sortinds],
+                   'ra': np.asarray(c4)[sortinds],
+                   'dec': np.asarray(c5)[sortinds],
+                   'l': np.asarray(c6)[sortinds],
+                   'b': np.asarray(c7)[sortinds],
+                   'dkpc': np.asarray(c8)[sortinds]}
         for k in sortinds:
             print('%25s  %6.2f  %6.3f  %10.4f  %10.4f  %10.4f  %10.4f  %7.1f(%.2f)'%(c1[k], c2[k], c3[k], c4[k], c5[k],
                                                                                c6[k], c7[k], c8[k], c9[k]))
     print("\n")
+    return results
 
 if __name__ == '__main__':
     import sys

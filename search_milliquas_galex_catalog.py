@@ -46,10 +46,12 @@ def search_milliquas_galex_catalog(gal_name, gal_coord1, gal_coord2,
     # this catalog is toooooo large, let's do a rough filtering first
     sepdeg = kpc2deg(within_radius_kpc, gal_dist_kpc)
     rough_dist = np.sqrt((millgalex['ra']-gal_ra)**2 + (millgalex['dec']-gal_dec)**2)
-    close_ids = rough_dist <= 2*sepdeg
+    nnn = 1
+    close_ids = rough_dist <= nnn*sepdeg # 2*sepdeg
     close_millgalex = millgalex[close_ids]
-    print("%d/%d QSOs are roughly within 2*%d kpc of the target."%(len(close_millgalex),
+    print("%d/%d QSOs are roughly within %d*%d kpc of the target."%(len(close_millgalex),
                                                                    len(millgalex),
+                                                                   nnn, 
                                                                    within_radius_kpc))
 
     # only look at targets with FUV mag within certian limits
@@ -69,6 +71,7 @@ def search_milliquas_galex_catalog(gal_name, gal_coord1, gal_coord2,
 
     if len(found_id) == 0:
         print("Found nothing.")
+        results = {}
     else:
         print('%25s  %8s  %5s  %10s  %10s  %10s  %10s  %7s'%('QSO',
               'z', 'fuv', 'ra', 'dec', 'l', 'b', 'impact'))
@@ -93,10 +96,23 @@ def search_milliquas_galex_catalog(gal_name, gal_coord1, gal_coord2,
             c11.append(impact.kpc/within_radius_kpc)
 
         sortinds = np.argsort(c10)
+
+        results = {'QSO': np.asarray(c1)[sortinds],
+                    'ra': np.asarray(c2)[sortinds],
+                    'dec': np.asarray(c3)[sortinds],
+                    'l': np.asarray(c4)[sortinds],
+                    'b': np.asarray(c5)[sortinds],
+                    'z': np.asarray(c6)[sortinds],
+                    'Vmag': np.asarray(c7)[sortinds],
+                   'FUVmag': np.asarray(c8)[sortinds],
+                   'NUVmag': np.asarray(c9)[sortinds],
+                   'dkpc': np.asarray(c10)[sortinds]}
+
         for k in sortinds:
             print('%25s  %8.3f  %5.2f  %10.4f  %10.4f  %10.4f  %10.4f  %7.1f(%.2f)'%(c1[k],
                   c6[k], c8[k], c2[k], c3[k], c4[k], c5[k], c10[k], c11[k]))
     print("\n")
+    return results
 
 if __name__ == '__main__':
     import sys
