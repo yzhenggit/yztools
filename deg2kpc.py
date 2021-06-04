@@ -10,8 +10,8 @@ def deg2kpc(impact_deg, distance_kpc, do_print=False):
     impact_kpc = impact_deg*(distance_kpc/206265)*3600
 
     if do_print == True:
-        print('%.4f deg at %.1f kpc is'%(impact_deg, distance_kpc))
-        print('%.4f kpc'%(impact_kpc))
+        print('%.6f deg at %.6f kpc is'%(impact_deg, distance_kpc))
+        print('%.6f kpc'%(impact_kpc))
     return impact_kpc
 
 
