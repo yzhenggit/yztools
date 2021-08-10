@@ -1,3 +1,4 @@
+# Can be depricated, replaced by atom_wave_gamma_f.py
 import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -7,6 +8,7 @@ def line_wave_fval(line, print_output=True):
     import numpy as np
     import re
 
+    print("!!! You are still using line_wave_fval, switch to atom_wave_gamma_f.py!!")
     if line == 'FeII1144':
         line = 'FeII1145'
     # line = 'SiIV1393'

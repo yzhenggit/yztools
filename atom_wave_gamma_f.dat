@@ -1,4 +1,5 @@
 #Ion        Wavelength[A]           gamma         f_value
+# note: these are vacuum wavelength 
 HI 1215.6701 6.265E8 0.416400
 HI 1025.7223 1.897E8 0.079120
 HI 972.5368 8.127E7 0.029000
