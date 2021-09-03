@@ -1,4 +1,5 @@
 # History:
+# 09/03/21, update voigt profile using functions from linetools, YZ.
 # first version, based on Draine 2011 Chapter 6 & 9
 # 03/03/2021, Yong Zheng
 
@@ -6,6 +7,66 @@ import numpy as np
 from astropy import constants as const
 import astropy.units as u
 from astropy.table import Table
+
+def lt_Voigt_profile(line, wave, logN, b, z):
+    """
+    line: e.g., 'SiIV 1393'
+    wave_AA: wavelength array values in unit of AA
+    """
+
+    import astropy.units as u
+    from linetools.spectralline import AbsLine
+    line_comp = AbsLine(trans=line)
+
+    line_comp.attrib['N'] = 10**logN*u.cm**(-2)
+    line_comp.attrib['b'] = b*u.km/u.s
+    line_comp.setz(z)
+
+    line_comp_voigt = line_comp.generate_voigt(wave=wave)
+
+    return line_comp_voigt
+
+def lt_Voigt_LSF(wave, line_comp_voigt, instrument='COS', grating='G130M'):
+    """
+    line: e.g., 'SiIV 1393'
+    wave: wavelength array values in unit of AA
+    instrument: only for 'COS', 'STIS'
+    grating: only for 'G130M', 'G160M', 'E140M'
+    """
+
+    from linetools.spectra.lsf import LSF
+
+    voigt_flux = line_comp_voigt.flux
+    voigt_flux_lsf = np.zeros_like(voigt_flux)
+
+    # first determine the LSF
+    for ll,w0 in enumerate(wave):
+        lolim_idx = np.max([0,ll-20])
+        uplim_idx = np.min([len(wave)-1,ll+20])
+
+        # decide which instrument configuration to use
+        if (instrument == 'COS') & (grating == 'G130M'):
+            instr_config = LSF({'name':'COS','grating':'G130M','life_position':'1'})
+        elif (instrument == 'COS') & (grating == 'G160M'):
+            instr_config = LSF({'name':'COS','grating':'G160M','life_position':'1'})
+        else:
+            print("I don't recognize this instrument/grating: %s/%s. stop."%(instrument, grating))
+            return
+        # NEED to add STIS here
+
+        lsf_tab = instr_config.interpolate_to_wv_array(wave[lolim_idx:uplim_idx+1])
+        # LSF, why do this?
+        #if w0 < 1800.*u.AA:
+        #    lsf_tab = instr_config.interpolate_to_wv_array(wave[lolim_idx:uplim_idx+1])
+        #else:
+        #    new_kernel_wv = np.min([line_spec_wave[lolim_idx:uplim_idx+1].value,
+        #                        np.zeros_like(line_spec['Wave'][lolim_idx:uplim_idx+1].value)+1799.99],axis=0)
+        #    lsf_tab = instr_config.interpolate_to_wv_array(new_kernel_wv*u.AA)
+
+        # convolve
+        voigt_flux_lsf[lolim_idx:uplim_idx+1] += voigt_flux[ll]*lsf_tab['kernel']
+
+    return voigt_flux_lsf
 
 def phi_nu_voigt(nu, sigv, r_ul, nu_ul):
     # nu, frequency array
