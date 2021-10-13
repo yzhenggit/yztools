@@ -1,6 +1,6 @@
 import numpy as np
 
-def interp1d_flux_err(interp_wave_grid, wave, flux, error, fill_values=np.nan): 
+def linear_interp1d_with_error(interp_wave_grid, wave, flux, error, fill_values=np.nan): 
     """
     Interpolate spectra linearly, and do error proporgation properly 
     

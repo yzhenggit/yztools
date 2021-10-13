@@ -26,7 +26,7 @@ def lt_Voigt_profile(line, wave, logN, b, z):
 
     return line_comp_voigt
 
-def lt_Voigt_LSF(wave, line_comp_voigt, instrument='COS', grating='G130M'):
+def lt_Voigt_LSF(wave, flux, instrument='COS', grating='G130M'):
     """
     line: e.g., 'SiIV 1393'
     wave: wavelength array values in unit of AA
@@ -36,7 +36,7 @@ def lt_Voigt_LSF(wave, line_comp_voigt, instrument='COS', grating='G130M'):
 
     from linetools.spectra.lsf import LSF
 
-    voigt_flux = line_comp_voigt.flux
+    voigt_flux = flux # line_comp_voigt.flux
     voigt_flux_lsf = np.zeros_like(voigt_flux)
 
     # first determine the LSF
