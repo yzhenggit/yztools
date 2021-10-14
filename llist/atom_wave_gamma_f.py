@@ -1,11 +1,11 @@
 from astropy.table import Table
 import numpy as np
 
-def atom_wave_gamma_f(ionline, do_print=False):
+def atom_wave_gamma_f(ionline, do_print=False, line_dir='./'):
     # ionline in the form of 'HI1215', or 'SiIII1206', nospace
 
     # ion_tb = Table.read('/Users/Yong/Dropbox/atom_wave_gamma_f.dat', format='ascii')
-    line_dir = '/Users/Yong/Dropbox/GitRepo/yztools'
+    # line_dir = '/Users/Yong/Dropbox/GitRepo/yztools'
     ion_tb = Table.read(line_dir+'/atom_wave_gamma_f.dat', format='ascii')
 
     ind = np.nan
