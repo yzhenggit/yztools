@@ -1,3 +1,9 @@
+#### some folder 
+.ipynb_checkpoints/
+__pycache__/
+llist/__pycache__/atom_wave_gamma_f.cpython-36.pyc
+
+
 # Compiled source #
 ###################
 *.com
