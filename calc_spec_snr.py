@@ -65,6 +65,8 @@ def calc_spec_snr(wave, flux, error, continuum=[],
         print("Mean: %.1f"%(np.nanmean(all_snr)))
 
         for i, left in enumerate(snr_sample_point):
+            if np.isnan(left) == True:
+                continue
             right = left+dlambda
             ax.fill_between([left, right], ymin, ymax, color=plt.cm.Blues(0.6), alpha=0.7, label=None)
             ax.text(left, ymax*0.7, 'SNR=%.1f'%(all_snr[i]), rotation=90)
