@@ -1,4 +1,4 @@
-def load_atomic_data_morton03(ion):
+def morton03(ion):
     
     ion = ion.replace(' ', '')
     ### relevant atomic data
