@@ -6,6 +6,8 @@ def vhelio2vlsr_Westmeier(vel_init, l_deg, b_deg, reverse=False, do_print=False)
     - from http://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php
     - l_deg:  should be in degree
     - b_deg: should be in degree
+    - reverse: if True, input = vlsr, output = vhelio
+               if False, input = vhelio, output = true
     - vel_init: velocity that need to be transformed
     -          vel_init = vhelio if reverse = False
     -          vel_init = vlsr   if reverse = True
