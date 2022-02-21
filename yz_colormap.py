@@ -16,7 +16,7 @@ def discrete_map(cmap, cmin, cmax, cnum):
     cmap, val2color, norm, bounds = discrete_map(plt.cm.bwr, 0.15, 0.4, 20)
     im = ax.imshow(m0, origin='lower', interpolation='nearest', 
                    cmap=cmap, norm=norm)
-    # val2color is used for scattered plot. 
+    # val2color.to_rgba() is used for scattered plot. 
     
     cax = fig.add_axes([0.83, 0.1, 0.03, 0.8])
     fig.colorbar(im, cax=cax, spacing='proportional', format='%.2f', 

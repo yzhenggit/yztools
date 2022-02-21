@@ -114,7 +114,7 @@ def voigt_profile(ionline, N, b, wave_halfwidth=5, dwave=0.005):
     # N: column density, unit of cm-2 # only value input though
     # b: doppler width, unit of km/s # only value input though
 
-    from yztools.atom_wave_gamma_f import atom_wave_gamma_f
+    from yztools.llist.atom_wave_gamma_f import atom_wave_gamma_f
     lineres = atom_wave_gamma_f(ionline)
     line_gamma = lineres['gamma']
     line_wrest = lineres['wrest']
