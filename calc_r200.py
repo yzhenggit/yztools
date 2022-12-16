@@ -59,7 +59,7 @@ def calc_r200(logmhalo, sig_logmhalo=0., label='200m', do_print=False, Ntrials=4
         # calculate r200 with respect to critical density
         if label == '200c': 
             best_r200_kpc = np.around(r200c(mhalo), decimals=1)
-        else# label == '200m': 
+        else: # label == '200m'
         # calculate r200 with respect to matter density
             best_r200_kpc = np.around(r200m(mhalo), decimals=1)
         sig_low_r200, sig_hi_r200 = 0., 0.
