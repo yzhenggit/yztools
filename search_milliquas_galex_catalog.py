@@ -40,7 +40,7 @@ def search_milliquas_galex_catalog(gal_name, gal_coord1, gal_coord2,
                            gal_coord.galactic.l.degree, gal_coord.galactic.b.degree))
 
     # read in the QSO catalog
-    cat_dir = '/Users/Yong/Dropbox/Databucket'
+    cat_dir = '/Users/Yong/Dropbox/Databucket/milliquas_v5.2'
     millgalex = Table.read(cat_dir+'/milliquas_v5.2_galex_jb032219.fits', format='fits')
 
     # this catalog is toooooo large, let's do a rough filtering first

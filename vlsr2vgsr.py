@@ -3,6 +3,7 @@ def vlsr2vgsr(vlsr, l_deg, b_deg, do_print=False):
     How to use:
     vlsr2vgsr(vlsr, l_deg, b_deg)
 
+    see https://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php#velocity
     History:
     03/16/2020, YZ, UCB
     """

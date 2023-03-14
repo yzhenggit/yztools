@@ -1,10 +1,93 @@
-def mhalo2mstar_moster13(log_mhalo, do_print=False):
+def find_logmstar_const_munshi21(do_print=False):
+    import numpy as np 
+    # Munshi+2021's SMHM is a broken power law
+    # but they didn't specify the reference stellar mass
+    # so here we are going to calculate it by making sure that at the high mass end
+    # the mass is the same at the Behroozi+2013 relation 
+    # and the constant is the same as used in Munshi+2021's github: 
+    # https://github.com/emapple/smhm-toy-model/blob/main/toy-model.ipynb
+    
+    logm1 = 10 # characteristic halo mass in Munshi+2021 
+    alpha_high = 1.9
+    
+    # use logmstar_b13's value at logmhalo = 1e11.514 to anchor the constant in Munshi since they don't give one 
+    from yztools.mhalo2mstar import mhalo2mstar_behroozi13
+    logmhalo_b13_M1 = 11.514 # characteristic M1 peak mass in Behroozi+2013
+    logmstar_b13_ref = mhalo2mstar_behroozi13(logmhalo_b13_M1)[0] # get the corresponding stellar mass 
+
+    # use that smhm at b13 at the ref mhalo to get a constant 
+    logmstar_const_m21 = logmstar_b13_ref - alpha_high*np.log10(10**logmhalo_b13_M1 / 10**logm1)
+    logmstar_const_m21 = np.around(logmstar_const_m21, decimals=2)
+    if do_print == True: 
+        print('Munshi+2021, logmstar_const = {:.2f}'.format(logmstar_const_m21))
+        print("For Mstar = mstar_const * (Mhalo/M1)^alpha")
+        
+    return logmstar_const_m21
+    
+def m200c2mstar_munshi21(logmhalo, do_print=False, return_sigma=False):
+    '''
+    add Munshi+2021's SMHM based on parameters shown in their Figure 2 
+    designed from lower mass dwarfs from LMC-mass to UFDs from mhalo=1e7 to mhalo = 1e11 Msun
+    or mstar < 1e4 to 8.2e8 Msun
+
+    Note that the Munshi+2021's SMHM relation is based on 200c definition.
+    History: Yong Zheng, Dec 2022, RPI
+    '''
+    import numpy as np
+    logmhalo_arr = np.asarray([logmhalo]).flatten()
+    logmstar_arr = np.zeros(len(logmhalo_arr))
+    logmstar_sigma_arr = np.zeros(len(logmhalo_arr))
+    
+    from yztools.mhalo2mstar import mhalo2mstar_behroozi13
+    logmhalo_b13_M1 = 11.514 # characteristic M1 peak mass in Behroozi+2013
+    
+    # if there are values in logmhalo_arr higher than logmhalo_b13_M1, we use B13's relation 
+    ind_logmhalo_high = logmhalo_arr >= logmhalo_b13_M1
+    if len(logmhalo_arr[ind_logmhalo_high]) >0: 
+        if do_print==True: 
+            print("There are values higher than M1={}, gonna use Behroozi+2013's SMHM for those".format(logmhalo_b13_M1))
+        logmstar_arr[ind_logmhalo_high] = mhalo2mstar_behroozi13(logmhalo_arr[ind_logmhalo_high])
+        logmstar_sigma_arr[ind_logmhalo_high] = 0.3 # Munshi+2021 , page 4
+    
+    # for the rest of the values, use Munshi+2021's relation 
+    logmstar_const_m21 = find_logmstar_const_munshi21()
+    
+    # fitted values from Figure 2 of Munshi+2021 
+    sigma0 = 0.3
+    gamma = -0.39
+
+    alpha_high = 1.9
+    alpha_low = 2.8
+    
+    logm1 = 10 # characteristic halo mass in Munshi+2021 
+
+    # now generate the SMHM relation for Munshi+2021, only use it for low mass halo 
+    ind_high = np.all([logmhalo_arr >= logm1, logmhalo_arr<logmhalo_b13_M1], axis=0)
+    logmstar_arr[ind_high] = logmstar_const_m21 + alpha_high*np.log10(10**logmhalo_arr[ind_high] / 10**logm1)
+    logmstar_sigma_arr[ind_high] = sigma0
+
+    ind_low = logmhalo_arr<= logm1
+    logmstar_arr[ind_low] = logmstar_const_m21 + alpha_low*np.log10(10**logmhalo_arr[ind_low] / 10**logm1)
+    logmstar_sigma_arr[ind_low] = sigma0+gamma*(logmhalo_arr[ind_low] - logm1)
+   
+    if do_print == True:
+        print(">> Note that Munshi+2021 derivation is for M*=4-8.2e8 Msunish, or Mhalo=1e7-1e11\n")
+        print(">> At Mhalo>1e11.514, we use Behroozi+2013 here.")
+    
+    if return_sigma == True: 
+        return logmstar_arr, logmstar_sigma_arr
+    else: 
+        return logmstar_arr
+
+def m200c2mstar_moster13(log_mhalo, do_print=False):
     """
     Moster+2013's halo abundance matching.
     Based on Chabrier IMF
     Calculated over stellar mass of logM*=7.4--11.7 Msun.
+    All virial masses are based on 200c 
 
     History:
+    YZ, Dec 2022, RPI, update notes to m200c from mhalo
     YZ, 05/06/2022, UCB
     """
 

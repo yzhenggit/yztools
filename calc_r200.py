@@ -78,12 +78,12 @@ def calc_r200(logmhalo, sig_logmhalo=0., label='200m', do_print=False, Ntrials=4
         best_r200_kpc, sig_low_r200, sig_hi_r200 = calc_percentile(r200_range, ndecimals=1)
 
     if do_print == True:
-        if label == '200c'
+        if label == '200c':
             print(">> Use critical density, delta_c=rho/rho_c=200")
-            print(">> r200c = {}+{}{} kpc\n".format(best_r200c_kpc, sig_hi_r200c, sig_low_r200c))
+            print(">> r200c = {}+{}{} kpc\n".format(best_r200_kpc, sig_hi_r200, sig_low_r200))
         else: 
             print(">> Use mean matter density, delta_c=rho/(rho_c*Omega_m)=200")
-            print(">> r200m = {}+{}{} kpc\n".format(best_r200m_kpc, sig_hi_r200m, sig_low_r200m))
+            print(">> r200m = {}+{}{} kpc\n".format(best_r200_kpc, sig_hi_r200, sig_low_r200))
 
     return best_r200_kpc, sig_low_r200, sig_hi_r200
 
